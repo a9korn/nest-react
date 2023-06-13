@@ -1,12 +1,12 @@
 import React, {useState} from "react";
 import {Button} from "antd";
-import {getServerApiUrl} from "../utils/server-api";
+import {getServerApiUrl, timerAwait} from "../utils/server-api";
 
 const serverApi = getServerApiUrl();
-console.log('serverApi: ', serverApi);
 
 const TestButtons = () => {
     const [loading, setLoading] = useState(false);
+    const [fetchLoading, setfetchLoading] = useState(false);
     const handleClick = () => {
         console.log("CLICK 1");
         setLoading(false)
@@ -15,14 +15,17 @@ const TestButtons = () => {
         setLoading(true)
     };
     const loadUsers = async () => {
-        const data = await fetch(`${serverApi}/api/users`);
+        const fetchUserUrl = `${serverApi}/api/users`;
+        console.log('FETCHING DATA FROM URL: ', fetchUserUrl);
+        const data = await fetch(fetchUserUrl);
+        await timerAwait(1);
         return data.json();
     };
     const handleFetch = async () => {
-        setLoading(true)
+        setfetchLoading(true)
         const users = await loadUsers();
         console.log('users: ', users);
-        setLoading(false)
+        setfetchLoading(false)
     };
     return (
         <div>
@@ -35,7 +38,7 @@ const TestButtons = () => {
                 </Button>
             </div>
             <div>
-                <Button onClick={handleFetch} type="dashed" danger>Fetch</Button>
+                <Button loading={fetchLoading} onClick={handleFetch} type="dashed" danger>Fetch</Button>
             </div>
         </div>
     );
